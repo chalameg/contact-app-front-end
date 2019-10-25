@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import Home from '../components/Home.vue'
 import Contacts from '../components/Contacts.vue'
 import addContact from '../components/addContact.vue'
+import  uploadImage from '../components/uploadImage.vue'
+import  editContact from '../components/editContact.vue'
 import Signin from '../components/Auth/Signin.vue'
 import Signup from '../components/Auth/Signup.vue'
 
@@ -36,6 +38,16 @@ export default new Router({
       path: '/contacts/create',
       name: 'create',
       component: addContact
+    },
+    {
+      path: '/contacts/edit',
+      name: 'edit',
+      component: editContact
+    },
+    {
+      path: '/upload',
+      name: 'upload',
+      component: uploadImage
     }
   ]
 })

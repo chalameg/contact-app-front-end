@@ -3,12 +3,12 @@
     <v-container>
     <v-layout justify-center >
       <v-flex xm12 sm10 md4>
-        <v-form @submit.prevent="submitContact">
+        <v-form @submit.prevent="saveChanges">
           <v-card class='elevation-1'>
             <v-toolbar light>
               <v-toolbar-title>
-                <v-icon>mdi-phone-plus</v-icon>
-                Add Contact
+                <v-icon>mdi-account-edit</v-icon>
+                Edit Contact Info
               </v-toolbar-title>
             </v-toolbar>
   
@@ -19,6 +19,7 @@
                 label='First Name'
                 type='text'
                 v-model='firstName'
+                value='firstName'
                 :rules = '[rules.required]'
                 outlined
                 shaped
@@ -30,6 +31,7 @@
                 type='text'
                 :rules = '[rules.required]'
                 v-model='lastName'
+                value='lastName'
                 outlined
                 shaped
               >
@@ -42,6 +44,7 @@
                 type='text'
                 :rules = '[rules.required]'
                 v-model='phone'
+                value='phone'
                 outlined
                 shaped
                 append-icon="mdi-phone"
@@ -51,7 +54,7 @@
 
             <v-card-actions>
               <v-btn color="primary" outlined type="submit">
-                Add Contact
+                Save Changes
               </v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
@@ -73,14 +76,32 @@ export default {
     lastName : '',
     phone : '',
     image: '',
-    userId: localStorage.getItem('userId'),
+    userId: 'chala',
     rules: {
       required: value => !!value || 'Required'
     },
     addError: null,
+    contactId: '',
   }),
   methods:{
-    submitContact(){
+    //get contact to be edited
+    getContact(){
+      this.contactId = localStorage.getItem('contactId')
+
+      axios.get('http://localhost:3000/contacts/'+this.contactId+'')
+      .then(response=>{
+        //console.log(response.data.firstName)
+        this.firstName = response.data.firstName
+        this.lastName = response.data.lastName
+        this.phone = response.data.phone
+      })
+      .then(error=>{
+
+      })
+
+    },
+    //save edited contact
+    saveChanges(){
       const data = {
         firstName: this.firstName, 
         lastName: this.lastName, 
@@ -89,7 +110,7 @@ export default {
         userId: this.userId, 
       }
 
-      axios.post('http://localhost:3000/users/'+this.userId+'/contact',data)
+      axios.patch('http://localhost:3000/contacts/'+this.contactId+'',data)
       .then(response=>{
         //console.log(response)
       })
@@ -97,12 +118,15 @@ export default {
           router.push('/contacts')
         })
       .then(error=>{
-        this.addError = error.response.data.message
+        this.addError = error.response.data.reeror.message
       })
-
-      
-
+      //remove contact id after contact is edited
+      localStorage.removeItem('contactId')
     }
   }
+  ,
+  mounted() {
+    this.getContact();
+    },
 }
 </script>

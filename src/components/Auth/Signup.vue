@@ -13,14 +13,7 @@
             </v-toolbar>
       
             <v-card-text>
-              <v-alert
-              v-bind:style='{display : displayNone}'
-              :value='true'
-              color='error'
-              >
-              <v-icon>mdi-warnig</v-icon>
-              Account already exists with this email.
-              </v-alert>
+              <p v-if="signupError">{{signupError}}</p>
               <div class="row">
                 <div class="col-md-6">
                   <v-text-field
@@ -92,7 +85,8 @@
 </template>
 
 <script>
-import {axios} from 'axios'
+import axios from 'axios';
+import router from "../../router/router";
 
 export default {
   data: () =>({
@@ -100,25 +94,31 @@ export default {
     lastName : '',
     email : '',
     password : '',
-    displayNone: 'none',
     rules: {
       required: value => !!value || 'Required'
-    }
+    },
+    signupError: null,
   }),
   methods:{
     submitForm(){
-      console.log(this.firstName)
-      axios.post('http://localhost:3000/users',{
+      //console.log(this.firstName)
+      const data = {
         firstName: this.firstName,
         lastName: this.lastName,
         email: this.email,
         password: this.password
-      })
+      }
+
+      axios.post('http://localhost:3000/users',data)
       .then(response =>{
-        console.log(response)
+        //console.log(response)
       })
+      .then(_ => {
+          router.push('/signin')
+        })
       .catch(error=>{
-        console.log(error.response.data.error)
+        //console.log(error.response.data.error)
+        this.signupError = error.response.data.error.message
       })
     }
   }

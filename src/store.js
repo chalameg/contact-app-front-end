@@ -9,7 +9,8 @@ export default new Vuex.Store({
   state: {
     accessToken: null,
     loggingIn: false,
-    loginError: null
+    loginError: null,
+    userId:null
   },
   mutations: {
     loginStart: state => state.loggingIn = true,
@@ -23,6 +24,7 @@ export default new Vuex.Store({
     
     logout: (state) => {
       state.accessToken = null;
+      state.userId = null;
     }
   },
   actions: {
@@ -33,9 +35,11 @@ export default new Vuex.Store({
         ...loginData
       })
       .then(response => {
-        localStorage.setItem('accessToken', response.data.token);
+        console.log(response.data)
+        localStorage.setItem('accessToken', response.data.token_userId[0]);
+        localStorage.setItem('userId',response.data.token_userId[1])
         commit('loginStop', null);
-        commit('updateAccessToken', response.data.token);
+        commit('updateAccessToken', response.data.token_userId[0]);
         router.push('/contacts');
       })
       .catch(error => {
@@ -48,6 +52,7 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('userId');
       commit('logout');
       router.push('/signin');
     }
